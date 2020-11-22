@@ -92,10 +92,10 @@ int main(int argc, char *argv[])
 	while (1){
 		numbytes = recvfrom(sockfd, raw_buffer, ETH_LEN, 0, NULL, NULL);
 		
-		printf("received packet : src mac %02x:%02x:%02x:%02x:%02x:%02x : dst mac %02x:%02x:%02x:%02x:%02x:%02x \n", raw->ethernet.src_addr[0], raw->ethernet.src_addr[1], raw->ethernet.src_addr[2],
+		/*printf("received packet : src mac %02x:%02x:%02x:%02x:%02x:%02x : dst mac %02x:%02x:%02x:%02x:%02x:%02x \n", raw->ethernet.src_addr[0], raw->ethernet.src_addr[1], raw->ethernet.src_addr[2],
 																						raw->ethernet.src_addr[3], raw->ethernet.src_addr[4], raw->ethernet.src_addr[5],
 																						raw->ethernet.dst_addr[0], raw->ethernet.dst_addr[1], raw->ethernet.dst_addr[2],
-																						raw->ethernet.dst_addr[3], raw->ethernet.dst_addr[4], raw->ethernet.dst_addr[5]);
+																						raw->ethernet.dst_addr[3], raw->ethernet.dst_addr[4], raw->ethernet.dst_addr[5]);*/
 		
 		if (raw->ethernet.eth_type == ntohs(ETH_P_IP)){
 			printf("IP packet, %d bytes - src ip: %d.%d.%d.%d dst ip: %d.%d.%d.%d proto: %d\n",
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 				raw->ip.dst[0], raw->ip.dst[1], raw->ip.dst[2], raw->ip.dst[3],
 				raw->ip.proto
 			);
-			if (raw->ip.proto == PROTO_UDP) { //&& raw->udp.dst_port == ntohs(DST_PORT)){
+			if (raw->ip.proto == PROTO_UDP) {
 				p = (char *)&raw->udp + ntohs(raw->udp.udp_len);
 				*p = '\0';
 				printf("src port: %d dst port: %d size: %d msg: %s", 
@@ -114,18 +114,16 @@ int main(int argc, char *argv[])
 			}
 		}
 		
-		/*int i;
-		for(i = 0; i < 6; i++)
-		{
-			printf("MAC %d : %d\n", eth
-		}*/
-		
 		c_mac(raw);
 	
-		if (sendto(sockfd, raw_buffer, numbytes, 0, (struct sockaddr*)&socket_address, sizeof(struct sockaddr_ll)) < 0)
-			printf("Send failed\n");
+		printf("ETHERTYPE : %x\n", raw->ethernet.eth_type);
+	
+		if (raw->ethernet.eth_type != 0x0806) {
+			if (sendto(sockfd, raw_buffer, numbytes, 0, (struct sockaddr*)&socket_address, sizeof(struct sockaddr_ll)) < 0)
+				printf("Send failed\n");
 
-		printf("sent packet, %d bytes\n", numbytes);
+			printf("sent packet, %d bytes\n", numbytes);
+		}
 	}
 
 	return 0;
