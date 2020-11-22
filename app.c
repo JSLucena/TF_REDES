@@ -73,7 +73,6 @@ int main(int argc, char *argv[])
 	/* Get interface name */
 	if (argc > 1)
 		strcpy(ifName, argv[1]);
-
 	/* Open RAW socket */
 	if ((sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) == -1)
 		perror("socket");
@@ -96,6 +95,12 @@ int main(int argc, char *argv[])
 
 	while (1){
 		numbytes = recvfrom(sockfd, raw_buffer, ETH_LEN, 0, NULL, NULL);
+		
+		printf("received packet : src mac %02x:%02x:%02x:%02x:%02x:%02x : dst mac %02x:%02x:%02x:%02x:%02x:%02x \n", raw->ethernet.src_addr[0], raw->ethernet.src_addr[1], raw->ethernet.src_addr[2],
+																						raw->ethernet.src_addr[3], raw->ethernet.src_addr[4], raw->ethernet.src_addr[5],
+																						raw->ethernet.dst_addr[0], raw->ethernet.dst_addr[1], raw->ethernet.dst_addr[2],
+																						raw->ethernet.dst_addr[3], raw->ethernet.dst_addr[4], raw->ethernet.dst_addr[5]);
+		
 		if (raw->ethernet.eth_type == ntohs(ETH_P_IP)){
 			printf("IP packet, %d bytes - src ip: %d.%d.%d.%d dst ip: %d.%d.%d.%d proto: %d\n",
 				numbytes,
