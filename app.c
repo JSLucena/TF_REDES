@@ -11,6 +11,7 @@
 #include <netinet/ether.h>
 
 #define PROTO_UDP	17
+#define PROTO_TCP	6
 #define DST_PORT	8000
 
 #define ETH_LEN	1518
@@ -78,7 +79,7 @@ int main(int argc, char *argv[])
 	ifopts.ifr_flags |= IFF_PROMISC;
 	ioctl(sockfd, SIOCSIFFLAGS, &ifopts);
 	
-	// algo
+	/* Get the index of the interface */
 	memset(&if_idx, 0, sizeof(struct ifreq));
 	strncpy(if_idx.ifr_name, ifName, IFNAMSIZ-1);
 	if (ioctl(sockfd, SIOCGIFINDEX, &if_idx) < 0)
@@ -104,21 +105,16 @@ int main(int argc, char *argv[])
 				raw->ip.dst[0], raw->ip.dst[1], raw->ip.dst[2], raw->ip.dst[3],
 				raw->ip.proto
 			);
-			if (raw->ip.proto == PROTO_UDP) {
-				p = (char *)&raw->udp + ntohs(raw->udp.udp_len);
-				*p = '\0';
-				printf("src port: %d dst port: %d size: %d msg: %s", 
-				ntohs(raw->udp.src_port), ntohs(raw->udp.dst_port),
-				ntohs(raw->udp.udp_len), (char *)&raw->udp + sizeof(struct udp_hdr_s)
-				); 
+			if (raw->ip.proto == PROTO_UDP || raw->ip.proto == PROTO_TCP) {
+				printf("src port: %d dst port: %d size: %d",// msg: %s", 
+				ntohs(raw->udp.src_port), ntohs(raw->udp.dst_port), numbytes);
+				//ntohs(raw->udp.udp_len), (char *)&raw->udp + sizeof(struct udp_hdr_s)
 			}
 		}
 		
 		c_mac(raw);
 	
-		printf("ETHERTYPE : %x\n", raw->ethernet.eth_type);
-	
-		if (raw->ethernet.eth_type != 0x0806) {
+		if (ntohs(raw->ethernet.eth_type) != 0x0806) {
 			if (sendto(sockfd, raw_buffer, numbytes, 0, (struct sockaddr*)&socket_address, sizeof(struct sockaddr_ll)) < 0)
 				printf("Send failed\n");
 
