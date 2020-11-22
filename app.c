@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 																						raw->ethernet.dst_addr[0], raw->ethernet.dst_addr[1], raw->ethernet.dst_addr[2],
 																						raw->ethernet.dst_addr[3], raw->ethernet.dst_addr[4], raw->ethernet.dst_addr[5]);*/
 		
-		if (raw->ethernet.eth_type == ntohs(ETH_P_IP)){
+/*		if (raw->ethernet.eth_type == ntohs(ETH_P_IP)){
 			printf("IP packet, %d bytes - src ip: %d.%d.%d.%d dst ip: %d.%d.%d.%d proto: %d\n",
 				numbytes,
 				raw->ip.src[0], raw->ip.src[1], raw->ip.src[2], raw->ip.src[3],
@@ -109,6 +109,22 @@ int main(int argc, char *argv[])
 				printf("src port: %d dst port: %d size: %d",// msg: %s", 
 				ntohs(raw->udp.src_port), ntohs(raw->udp.dst_port), numbytes);
 				//ntohs(raw->udp.udp_len), (char *)&raw->udp + sizeof(struct udp_hdr_s)
+			}
+		}*/
+		
+		if(raw->ethernet.eth_type == ntohs(ETH_P_IP))
+		{
+			if(raw->ip.proto == PROTO_UDP || raw->ip.proto == PROTO_TCP)
+			{
+				printf("<%d.%d.%d.%d:%d> <%d.%d.%d.%d:%d> proto: %d : n_bytes %d\n", raw->ip.src[0], raw->ip.src[1], raw->ip.src[2], raw->ip.src[3], raw->udp.src_port,
+																					 raw->ip.dst[0], raw->ip.dst[1], raw->ip.dst[2], raw->ip.dst[3], raw->udp.dst_port,
+																					 raw->ip.proto, numbytes);
+			}
+			else
+			{
+				printf("<%d.%d.%d.%d> <%d.%d.%d.%d> proto: %d : n_bytes %d\n", raw->ip.src[0], raw->ip.src[1], raw->ip.src[2], raw->ip.src[3],
+																			   raw->ip.dst[0], raw->ip.dst[1], raw->ip.dst[2], raw->ip.dst[3],
+																			   raw->ip.proto, numbytes);
 			}
 		}
 		
