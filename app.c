@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 			if (sendto(sockfd, raw_buffer, numbytes, 0, (struct sockaddr*)&socket_address, sizeof(struct sockaddr_ll)) < 0)
 				printf("Send failed\n");
 
-			printf("sent packet, %d bytes\n", numbytes);
+			//printf("sent packet, %d bytes\n", numbytes);
 		}
 	}
 
