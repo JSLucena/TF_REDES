@@ -53,11 +53,6 @@ struct eth_frame_s {
 
 void c_mac(struct eth_frame_s * eth_frame);
 
-
-char bcast_mac[6] =	{0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-char dst_mac[6] =	{0x00, 0x00, 0x00, 0x22, 0x22, 0x22};
-char src_mac[6] =	{0x00, 0x00, 0x00, 0x33, 0x33, 0x33};
-
 int main(int argc, char *argv[])
 {
 	struct ifreq ifopts;
@@ -92,6 +87,7 @@ int main(int argc, char *argv[])
 	socket_address.sll_halen = ETH_ALEN;
 
 	/* End of configuration. Now we can receive data using raw sockets. */
+	printf("Listening \n");
 
 	while (1){
 		numbytes = recvfrom(sockfd, raw_buffer, ETH_LEN, 0, NULL, NULL);
@@ -116,10 +112,13 @@ int main(int argc, char *argv[])
 				ntohs(raw->udp.udp_len), (char *)&raw->udp + sizeof(struct udp_hdr_s)
 				); 
 			}
-			continue;
 		}
-				
-		printf("got a packet, %d bytes\n", numbytes);
+		
+		/*int i;
+		for(i = 0; i < 6; i++)
+		{
+			printf("MAC %d : %d\n", eth
+		}*/
 		
 		c_mac(raw);
 	
