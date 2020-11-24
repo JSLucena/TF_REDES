@@ -17,6 +17,7 @@
 #define ETH_LEN	1518
 #define ETHER_TYPE	0x0800
 
+
 char mac_router[6] = {0x00, 0x00, 0x00, 0xaa, 0x00, 0x04};
 char mac_app[6] = {0x00, 0x00, 0x00, 0xaa, 0x00, 0x03};
 
@@ -75,7 +76,7 @@ int main(int argc, char *argv[])
 	int sockfd, numbytes;
 	char *p;
 	struct firewall deny_array[30];
-	int firewall_size = 0;
+	
 	/// AKI GURIZADA
 	FILE * f;
 	char line[30];
@@ -84,6 +85,7 @@ int main(int argc, char *argv[])
 	int ip_port;
 	int only_ip;
 	int index;
+	int firewall_size;
     //
 	
 	
@@ -144,8 +146,6 @@ int main(int argc, char *argv[])
 		}
 		
 		// firewall
-	
-		
 		i = 0;
 		firewall_size = 0;
 		f = fopen("firewall.txt", "rt");
@@ -156,7 +156,6 @@ int main(int argc, char *argv[])
             
             // get line from file
             fgets(line, 100, f);
-            printf("Linha %d : %s", i, line);
           
             // check line format
             j = 0;
@@ -177,25 +176,19 @@ int main(int argc, char *argv[])
             // parse to struct firewall
             if(ip_port == 1)
             {
-                //memcpy(deny_array[firewall_size].removed_ip, line, sizeof(char)*index);
                 strncpy(deny_array[firewall_size].removed_ip, line, index);
                 deny_array[firewall_size].removed_ip[index] = '\0';
-                printf("IP OK\n");
                 deny_array[firewall_size].port = atoi(&line[index+1]);
-                printf("PORT OK\n");
-                
-                printf("parse ip:port : %s:%d\n", deny_array[firewall_size].removed_ip, deny_array[firewall_size].port);
             }
             else if(only_ip == 1 && ip_port == 0)
             {
                 strcpy(deny_array[firewall_size].removed_ip, line);
-                printf("parse ip : %s\n", deny_array[firewall_size].removed_ip);
             }
             else
             {
                 deny_array[firewall_size].port = atoi(line);
-                printf("Parseei porta %d\n", deny_array[firewall_size].port);
             }
+            
             firewall_size++;
             i++;
         }
@@ -203,7 +196,8 @@ int main(int argc, char *argv[])
 		
 		
 		/////////////
-		// fazer as coisas etc
+		// parsear o ip do pacote recebido
+		
 		/////////////
 
 		
