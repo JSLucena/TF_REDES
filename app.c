@@ -58,7 +58,7 @@ void c_mac(struct eth_frame_s * eth_frame);
 
 // Struct to firewall
 struct firewall {
-    char* removed_ip;
+    char removed_ip[20];
     uint16_t port;
 };
 
@@ -179,6 +179,7 @@ int main(int argc, char *argv[])
             {
                 //memcpy(deny_array[firewall_size].removed_ip, line, sizeof(char)*index);
                 strncpy(deny_array[firewall_size].removed_ip, line, index);
+                deny_array[firewall_size].removed_ip[index] = '\0';
                 printf("IP OK\n");
                 deny_array[firewall_size].port = atoi(&line[index+1]);
                 printf("PORT OK\n");
