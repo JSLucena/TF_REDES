@@ -176,19 +176,21 @@ int main(int argc, char *argv[])
             if(ip_port == 1)
             {
                 memcpy(deny_array[firewall_size].removed_ip, line, sizeof(char)*j);
+                printf("IP OK\n");
                 deny_array[firewall_size].port = atoi(&line[j+1]);
+                printf("PORT OK\n");
                 
-                printf("parse ip:port : %s:%d", deny_array[firewall_size].removed_ip, deny_array[firewall_size].port);
+                printf("parse ip:port : %s:%d\n", deny_array[firewall_size].removed_ip, deny_array[firewall_size].port);
             }
             else if(only_ip == 1 && ip_port == 0)
             {
                 strcpy(deny_array[firewall_size].removed_ip, line);
-                printf("parse ip : %s", deny_array[firewall_size].removed_ip);
+                printf("parse ip : %s\n", deny_array[firewall_size].removed_ip);
             }
             else
             {
                 deny_array[firewall_size].port = atoi(line);
-                printf("Parseei porta %d", deny_array[firewall_size].port);
+                printf("Parseei porta %d\n", deny_array[firewall_size].port);
             }
             firewall_size++;
             i++;
