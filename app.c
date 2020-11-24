@@ -59,7 +59,7 @@ void c_mac(struct eth_frame_s * eth_frame);
 struct firewall {
     char* removed_ip;
     uint16_t port;
-}
+};
 
 
 
@@ -147,15 +147,14 @@ int main(int argc, char *argv[])
 		i = 0;
 		firewall_size = 0;
 		f = fopen("firewall.txt", "rt");
-		while (!feof(arq))
+		while (!feof(f))
         {
             ip_port = 0;
             only_ip = 0;
             
             // get line from file
-            result = fgets(line, 100, f);
-            if (result)
-                printf("Linha %d : %s", i, line);
+            fgets(line, 100, f);
+            printf("Linha %d : %s", i, line);
           
             // check line format
             j = 0;
@@ -177,7 +176,7 @@ int main(int argc, char *argv[])
             if(ip_port == 1)
             {
                 memcpy(deny_array[firewall_size].removed_ip, line, sizeof(char)*j);
-                deny_array[firewall_size].port = atoi(line[j+1]);
+                deny_array[firewall_size].port = atoi(&line[j+1]);
                 
                 printf("parse ip:port : %s:%d", deny_array[firewall_size].removed_ip, deny_array[firewall_size].port);
             }
