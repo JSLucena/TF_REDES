@@ -54,6 +54,17 @@ struct eth_frame_s {
 
 void c_mac(struct eth_frame_s * eth_frame);
 
+
+// Struct para o firewall
+struct firewall {
+    char* removed_ip;
+    uint16_t port;
+}
+
+
+
+
+
 int main(int argc, char *argv[])
 {
 	struct ifreq ifopts;
@@ -62,6 +73,17 @@ int main(int argc, char *argv[])
 	char ifName[IFNAMSIZ];
 	int sockfd, numbytes;
 	char *p;
+	struct firewall deny_array[30];
+	int firewall_size = 0;
+	/// AKI GURIZADA
+	FILE * f;
+	char line[30];
+    int result;
+    int i, j;
+	int ip_port;
+	int only_ip;
+    //
+	
 	
 	uint8_t raw_buffer[ETH_LEN];
 	struct eth_frame_s *raw = (struct eth_frame_s *)&raw_buffer;
@@ -89,6 +111,11 @@ int main(int argc, char *argv[])
 
 	/* End of configuration. Now we can receive data using raw sockets. */
 	printf("Listening \n");
+	
+	// readfile
+	
+	
+        
 
 	while (1){
 		numbytes = recvfrom(sockfd, raw_buffer, ETH_LEN, 0, NULL, NULL);
@@ -113,6 +140,66 @@ int main(int argc, char *argv[])
 																			   raw->ip.proto, numbytes);
 			}
 		}
+		// firewall
+		
+		int index;
+		
+		i = 0;
+		firewall_size = 0;
+		f = fopen("firewall.txt", "rt");
+		while (!feof(arq))
+        {
+            ip_port = 0;
+            only_ip = 0;
+            
+            // get line from file
+            result = fgets(line, 100, f);
+            if (result)
+                printf("Linha %d : %s", i, line);
+          
+            // check line format
+            j = 0;
+            while(line[j] != '\0')
+            {
+                if(line[j] == ':')
+                {
+                    index = j;
+                    ip_port = 1;
+                }
+                else if(line[j] == '.')
+                {
+                    only_ip = 1;
+                }
+                j++;
+            }
+            
+            // parse to struct firewall
+            if(ip_port == 1)
+            {
+                memcpy(deny_array[firewall_size].removed_ip, line, sizeof(char)*j);
+                deny_array[firewall_size].port = atoi(line[j+1]);
+                
+                printf("parse ip:port : %s:%d", deny_array[firewall_size].removed_ip, deny_array[firewall_size].port);
+            }
+            else if(only_ip == 1 && ip_port == 0)
+            {
+                strcpy(deny_array[firewall_size].removed_ip, line);
+                printf("parse ip : %s", deny_array[firewall_size].removed_ip);
+            }
+            else
+            {
+                deny_array[firewall_size].port = atoi(line);
+                printf("Parseei porta %d", deny_array[firewall_size].port);
+            }
+            firewall_size++;
+            i++;
+        }
+        fclose(f);
+		
+		
+		/////////////
+
+		
 		
 		// change mac addresses
 		c_mac(raw);
@@ -138,3 +225,8 @@ void c_mac(struct eth_frame_s * eth_frame)
 		eth_frame->ethernet.src_addr[i] = mac_app[i];
 	}
 }
+
+
+
+
+
