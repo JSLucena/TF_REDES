@@ -52,10 +52,11 @@ struct eth_frame_s {
 	struct udp_hdr_s udp;
 };
 
+// function to change MACs
 void c_mac(struct eth_frame_s * eth_frame);
 
 
-// Struct para o firewall
+// Struct to firewall
 struct firewall {
     char* removed_ip;
     uint16_t port;
@@ -82,6 +83,7 @@ int main(int argc, char *argv[])
     int i, j;
 	int ip_port;
 	int only_ip;
+	int index;
     //
 	
 	
@@ -140,9 +142,9 @@ int main(int argc, char *argv[])
 																			   raw->ip.proto, numbytes);
 			}
 		}
-		// firewall
 		
-		int index;
+		// firewall
+	
 		
 		i = 0;
 		firewall_size = 0;
@@ -175,9 +177,10 @@ int main(int argc, char *argv[])
             // parse to struct firewall
             if(ip_port == 1)
             {
-                memcpy(deny_array[firewall_size].removed_ip, line, sizeof(char)*j);
+                //memcpy(deny_array[firewall_size].removed_ip, line, sizeof(char)*index);
+                strncpy(deny_array[firewall_size].removed_ip, line, index);
                 printf("IP OK\n");
-                deny_array[firewall_size].port = atoi(&line[j+1]);
+                deny_array[firewall_size].port = atoi(&line[index+1]);
                 printf("PORT OK\n");
                 
                 printf("parse ip:port : %s:%d\n", deny_array[firewall_size].removed_ip, deny_array[firewall_size].port);
@@ -198,6 +201,8 @@ int main(int argc, char *argv[])
         fclose(f);
 		
 		
+		/////////////
+		// fazer as coisas etc
 		/////////////
 
 		
