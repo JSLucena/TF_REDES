@@ -174,7 +174,8 @@ int main(int argc, char *argv[])
             if(ip_port == 1)
             {
                 strncpy(deny_array[firewall_size].removed_ip, line, index);
-                deny_array[firewall_size].removed_ip[index] = '\0';
+                deny_array[firewall_size].removed_ip[index] = '\n';
+                deny_array[firewall_size].removed_ip[index+1] = '\0';
                 deny_array[firewall_size].port = atoi(&line[index+1]);
                 deny_array[firewall_size].type = 0;
             }
@@ -196,7 +197,7 @@ int main(int argc, char *argv[])
 		
 		
 		// parse ip and port from received packet
-		sprintf(ip_parsed, "%d.%d.%d.%d", raw->ip.dst[0], raw->ip.dst[1], raw->ip.dst[2], raw->ip.dst[3]);
+ 		sprintf(ip_parsed, "%d.%d.%d.%d\n", raw->ip.dst[0], raw->ip.dst[1], raw->ip.dst[2], raw->ip.dst[3]);
 		port_parsed = ntohs(raw->udp.dst_port);
 		
 		printf("Parsed ip %s\n", ip_parsed);
