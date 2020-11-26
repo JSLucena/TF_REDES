@@ -61,6 +61,7 @@ void c_mac(struct eth_frame_s * eth_frame);
 struct firewall {
     char removed_ip[20];
     uint16_t port;
+    int type; // ip_port_peer = 0, ip_only = 1, port_only = 2
 };
 
 
@@ -86,6 +87,9 @@ int main(int argc, char *argv[])
 	int only_ip;
 	int index;
 	int firewall_size;
+	int block;
+	char ip_parsed[30];
+	uint16_t port_parsed;
     //
 	
 	
@@ -115,10 +119,6 @@ int main(int argc, char *argv[])
 
 	/* End of configuration. Now we can receive data using raw sockets. */
 	printf("Listening \n");
-	
-	// readfile
-	
-	
         
 
 	while (1){
@@ -179,14 +179,17 @@ int main(int argc, char *argv[])
                 strncpy(deny_array[firewall_size].removed_ip, line, index);
                 deny_array[firewall_size].removed_ip[index] = '\0';
                 deny_array[firewall_size].port = atoi(&line[index+1]);
+                deny_array[firewall_size].type = 0;
             }
             else if(only_ip == 1 && ip_port == 0)
             {
                 strcpy(deny_array[firewall_size].removed_ip, line);
+                deny_array[firewall_size].type = 1;
             }
             else
             {
                 deny_array[firewall_size].port = atoi(line);
+                deny_array[firewall_size].type = 2;
             }
             
             firewall_size++;
@@ -197,10 +200,50 @@ int main(int argc, char *argv[])
 		
 		/////////////
 		// parsear o ip do pacote recebido
-		
+		sprintf(ip_parsed, "%d.%d.%d.%d", raw->ip.src[0], raw->ip.src[1], raw->ip.src[2], raw->ip.src[3]);
+		port_parsed = ntohs(raw->udp.src_port);
 		/////////////
+		
+		printf("Parsed ip %s\n", ip_parsed);
+		printf("Parsed port %d\n", port_parsed);
 
 		
+		block = 0;
+		//
+		for(i = 0; i < firewall_size; i++)
+		{
+		    if(deny_array[i].type == 0) // ip and port
+		    {
+		        if(strcmp(ip_parsed, deny_array[i].removed_ip) == 0 && port_parsed == deny_array[i].port)
+		        {
+		            printf("blocked \n");
+		            block = 1;
+		            break;
+		        }
+		    }
+		    else if(deny_array[i].type == 1) // ip only
+		    {
+		        if(strcmp(ip_parsed, deny_array[i].removed_ip) == 0)
+		        {
+		            printf("blocked \n");
+		            block = 1;
+		            break;
+		        }
+		    }
+		    else if(deny_array[i].type == 2) // port only
+		    {
+		        if (port_parsed == deny_array[i].port)
+		        {
+		            printf("blocked \n");
+		            block = 1;
+		            break;
+		        }
+		    }
+		}
+		//
+
+        if(block == 1)
+            continue;
 		
 		// change mac addresses
 		c_mac(raw);
