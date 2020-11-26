@@ -199,11 +199,6 @@ int main(int argc, char *argv[])
 		// parse ip and port from received packet
  		sprintf(ip_parsed, "%d.%d.%d.%d\n", raw->ip.dst[0], raw->ip.dst[1], raw->ip.dst[2], raw->ip.dst[3]);
 		port_parsed = ntohs(raw->udp.dst_port);
-		
-		printf("Parsed ip %s\n", ip_parsed);
-		printf("Parsed port %d\n", port_parsed);
-
-		
 
 		// if ip and port are on firewall, block
 		block = 0;
@@ -214,7 +209,6 @@ int main(int argc, char *argv[])
 		        
 		        if(strcmp(ip_parsed, deny_array[i].removed_ip) == 0 && port_parsed == deny_array[i].port)
 		        {
-		            printf("blocked \n");
 		            block = 1;
 		            break;
 		        }
@@ -225,7 +219,6 @@ int main(int argc, char *argv[])
 		        
 		        if(strcmp(ip_parsed, deny_array[i].removed_ip) == 0)
 		        {
-		            printf("blocked \n");
 		            block = 1;
 		            break;
 		        }
@@ -234,7 +227,6 @@ int main(int argc, char *argv[])
 		    {
 		        if (port_parsed == deny_array[i].port)
 		        {
-		            printf("blocked \n");
 		            block = 1;
 		            break;
 		        }
