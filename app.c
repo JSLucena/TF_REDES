@@ -77,8 +77,6 @@ int main(int argc, char *argv[])
 	int sockfd, numbytes;
 	char *p;
 	struct firewall deny_array[30];
-	
-	/// AKI GURIZADA
 	FILE * f;
 	char line[30];
     int result;
@@ -90,7 +88,6 @@ int main(int argc, char *argv[])
 	int block;
 	char ip_parsed[30];
 	uint16_t port_parsed;
-    //
 	
 	
 	uint8_t raw_buffer[ETH_LEN];
@@ -198,18 +195,17 @@ int main(int argc, char *argv[])
         fclose(f);
 		
 		
-		/////////////
-		// parsear o ip do pacote recebido
-		sprintf(ip_parsed, "%d.%d.%d.%d", raw->ip.src[0], raw->ip.src[1], raw->ip.src[2], raw->ip.src[3]);
-		port_parsed = ntohs(raw->udp.src_port);
-		/////////////
+		// parse ip and port from received packet
+		sprintf(ip_parsed, "%d.%d.%d.%d", raw->ip.dst[0], raw->ip.dst[1], raw->ip.dst[2], raw->ip.dst[3]);
+		port_parsed = ntohs(raw->udp.dst_port);
 		
 		printf("Parsed ip %s\n", ip_parsed);
 		printf("Parsed port %d\n", port_parsed);
 
 		
+
+		// if ip and port are on firewall, block
 		block = 0;
-		//
 		for(i = 0; i < firewall_size; i++)
 		{
 		    if(deny_array[i].type == 0) // ip and port
@@ -240,11 +236,11 @@ int main(int argc, char *argv[])
 		        }
 		    }
 		}
-		//
 
         if(block == 1)
             continue;
 		
+
 		// change mac addresses
 		c_mac(raw);
 	
