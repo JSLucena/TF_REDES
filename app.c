@@ -206,7 +206,6 @@ int main(int argc, char *argv[])
 		{
 		    if(deny_array[i].type == 0) // ip and port
 		    {
-		        
 		        if(strcmp(ip_parsed, deny_array[i].removed_ip) == 0 && port_parsed == deny_array[i].port)
 		        {
 		            block = 1;
@@ -215,8 +214,6 @@ int main(int argc, char *argv[])
 		    }
 		    else if(deny_array[i].type == 1) // ip only
 		    {
-		        printf("ip removed %s\n", deny_array[i].removed_ip);
-		        
 		        if(strcmp(ip_parsed, deny_array[i].removed_ip) == 0)
 		        {
 		            block = 1;
